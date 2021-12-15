@@ -33,7 +33,7 @@ fun main() {
     fun resume(value: Any) {
         when (label) {
             0 -> {
-                userService.getUserByIdAsSingle(userId)
+                userService.getUserByIdAsMaybe(userId)
                     .subscribe { user ->
                         label++
                         resume(user)

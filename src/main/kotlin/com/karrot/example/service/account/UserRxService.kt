@@ -5,7 +5,7 @@ import io.reactivex.rxjava3.core.Maybe
 import java.util.concurrent.TimeUnit
 
 class UserRxService : UserServiceBase() {
-    fun getUserByIdAsSingle(userId: String): Maybe<User> {
+    fun getUserByIdAsMaybe(userId: String): Maybe<User> {
         val user = prepareUser(userId)
         return Maybe.just(user)
             .delay(100L, TimeUnit.MILLISECONDS)

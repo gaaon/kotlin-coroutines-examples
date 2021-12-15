@@ -20,7 +20,7 @@ fun main() {
     val productIds = listOf("product1", "product2", "product3")
     val userId = "user1"
 
-    RxJava3Adapter.maybeToMono(userService.getUserByIdAsSingle(userId))
+    RxJava3Adapter.maybeToMono(userService.getUserByIdAsMaybe(userId))
         .flatMap { buyer ->
             JdkFlowAdapter.flowPublisherToFlux(addressService.getAddressByUserAsPublisher(buyer))
                 .last()

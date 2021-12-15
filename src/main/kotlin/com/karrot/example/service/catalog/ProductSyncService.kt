@@ -7,4 +7,9 @@ class ProductSyncService : ProductServiceBase() {
         Thread.sleep(100)
         return productIds.map { prepareProduct(it) }
     }
+
+    fun getProductByIdSync(productId: String): Product {
+        Thread.sleep(100)
+        return prepareProduct(productId)
+    }
 }

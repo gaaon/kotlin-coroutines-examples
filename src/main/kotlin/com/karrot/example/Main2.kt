@@ -17,7 +17,7 @@ fun main() {
     val productIds = listOf("product1", "product2", "product3")
     val userId = "user1"
 
-    userService.getUserByIdAsSingle(userId)
+    userService.getUserByIdAsMaybe(userId)
         .subscribe { buyer ->
             addressService.getAddressByUserAsPublisher(buyer)
                 .subscribe(

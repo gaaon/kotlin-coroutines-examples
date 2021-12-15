@@ -24,22 +24,12 @@ fun main() {
     val userId = "user1"
 
     runBlocking {
-        // 0
-        val buyer = userService.getUserByIdAsSingle(userId).awaitSingle()
-
-        // 1
+        val buyer = userService.getUserByIdAsMaybe(userId).awaitSingle()
         val address = addressService.getAddressByUserAsPublisher(buyer).awaitLast()
-
-        // 2
         val products = productService.getProductsByIdsAsFlux(productIds).collectList().awaitSingle()
-
-        // 3
         val stores = storeService.getStoresByProductsAsMulti(products).asFlow().toList()
-
-        // 4
         val order = orderService.createOrderAsCompletableFuture(buyer, products, stores, address).await()
 
-        // 5
         println(order)
     }
 }
