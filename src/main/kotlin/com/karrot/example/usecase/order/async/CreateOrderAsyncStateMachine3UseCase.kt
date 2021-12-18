@@ -1,4 +1,4 @@
-package com.karrot.example.usecase
+package com.karrot.example.usecase.order.async
 
 import com.karrot.example.entity.account.User
 import com.karrot.example.entity.catalog.Product
@@ -8,13 +8,16 @@ import com.karrot.example.repository.account.UserRxRepository
 import com.karrot.example.repository.catalog.ProductReactorRepository
 import com.karrot.example.repository.order.OrderFutureRepository
 import com.karrot.example.repository.shipment.AddressReactiveRepository
-import com.karrot.example.repository.shipment.LastItemSubscriber
 import com.karrot.example.repository.store.StoreMutinyRepository
+import com.karrot.example.usecase.order.CreateOrderUseCaseBase
+import com.karrot.example.util.awaitLast
+import com.karrot.example.util.awaitSingle
+import com.karrot.example.util.toList
 import com.karrot.example.vo.Address
 import kotlin.coroutines.Continuation
 import kotlin.coroutines.CoroutineContext
 
-class CreateOrderAsyncStateMachine2UseCase(
+class CreateOrderAsyncStateMachine3UseCase(
     private val userRepository: UserRxRepository,
     private val addressRepository: AddressReactiveRepository,
     private val productRepository: ProductReactorRepository,
@@ -55,45 +58,31 @@ class CreateOrderAsyncStateMachine2UseCase(
 
         val cont = continuation as? UseCaseContinuation ?: UseCaseContinuation(continuation).apply {
             resume = fun() {
-                this@CreateOrderAsyncStateMachine2UseCase.execute(inputValues, this)
+                this@CreateOrderAsyncStateMachine3UseCase.execute(inputValues, this)
             }
         }
 
         when (cont.label) {
             0 -> {
                 cont.label = 1
-                userRepository.findUserByIdAsMaybe(userId)
-                    .subscribe { user ->
-                        cont.resumeWith(Result.success(user))
-                    }
+                userRepository.findUserByIdAsMaybe(userId).awaitSingle(cont)
             }
             1 -> {
                 cont.label = 2
                 cont.buyer = (cont.result as Result<User>).getOrThrow()
-                addressRepository.findAddressByUserAsPublisher(cont.buyer)
-                    .subscribe(LastItemSubscriber { address ->
-                        cont.resumeWith(Result.success(address))
-                    })
+                addressRepository.findAddressByUserAsPublisher(cont.buyer).awaitLast(cont)
             }
             2 -> {
                 cont.label = 3
                 cont.address = (cont.result as Result<Address>).getOrThrow()
                 isValidRegion(cont.address)
-                productRepository.findAllProductsByIdsAsFlux(productIds)
-                    .collectList()
-                    .subscribe { products ->
-                        cont.resumeWith(Result.success(products))
-                    }
+                productRepository.findAllProductsByIdsAsFlux(productIds).toList(cont)
             }
             3 -> {
                 cont.label = 4
                 cont.products = (cont.result as Result<List<Product>>).getOrThrow()
                 check(cont.products.isNotEmpty())
-                storeRepository.getStoresByProductsAsMulti(cont.products)
-                    .collect().asList()
-                    .subscribe().with { stores ->
-                        cont.resumeWith(Result.success(stores))
-                    }
+                storeRepository.getStoresByProductsAsMulti(cont.products).toList(cont)
             }
             4 -> {
                 cont.label = 5
@@ -101,9 +90,7 @@ class CreateOrderAsyncStateMachine2UseCase(
                 check(cont.stores.isNotEmpty())
                 orderRepository.createOrderAsCompletableFuture(
                     cont.buyer, cont.products, cont.stores, cont.address
-                ).whenComplete { order, _ ->
-                    cont.resumeWith(Result.success(order))
-                }
+                ).awaitSingle(cont)
             }
             5 -> {
                 cont.order = (cont.result as Result<Order>).getOrThrow()

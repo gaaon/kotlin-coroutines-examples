@@ -1,22 +1,20 @@
-package com.karrot.commerce.usecase
+package com.karrot.commerce.usecase.order.async
 
 import com.karrot.example.repository.account.UserRxRepository
 import com.karrot.example.repository.catalog.ProductReactorRepository
 import com.karrot.example.repository.order.OrderFutureRepository
 import com.karrot.example.repository.shipment.AddressReactiveRepository
 import com.karrot.example.repository.store.StoreMutinyRepository
-import com.karrot.example.usecase.CreateOrderAsyncStateMachine3UseCase
+import com.karrot.example.usecase.order.async.CreateOrderAsyncStateMachine3UseCase
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.SpyK
 import io.mockk.junit5.MockKExtension
-import kotlinx.coroutines.test.TestCoroutineContext
 import org.apache.commons.lang3.time.StopWatch
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 import kotlin.coroutines.Continuation
-import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.EmptyCoroutineContext
 
 @ExtendWith(MockKExtension::class)

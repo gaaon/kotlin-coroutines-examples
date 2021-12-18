@@ -1,4 +1,4 @@
-package com.karrot.example.usecase
+package com.karrot.example.usecase.order.reactor
 
 import com.karrot.example.entity.order.Order
 import com.karrot.example.repository.account.UserRxRepository
@@ -7,6 +7,7 @@ import com.karrot.example.repository.order.OrderFutureRepository
 import com.karrot.example.repository.shipment.AddressReactiveRepository
 import com.karrot.example.repository.shipment.LastItemSubscriber
 import com.karrot.example.repository.store.StoreMutinyRepository
+import com.karrot.example.usecase.order.CreateOrderUseCaseBase
 import reactor.core.publisher.Mono
 
 class CreateOrderReactorSubscribeUseCase(

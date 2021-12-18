@@ -1,4 +1,4 @@
-package com.karrot.example.usecase
+package com.karrot.example.usecase.order
 
 import com.karrot.example.vo.Address
 

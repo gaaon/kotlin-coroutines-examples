@@ -1,4 +1,4 @@
-package com.karrot.example.usecase
+package com.karrot.example.usecase.order.coroutine
 
 import com.karrot.example.entity.order.Order
 import com.karrot.example.repository.account.UserRxRepository
@@ -6,6 +6,7 @@ import com.karrot.example.repository.catalog.ProductReactorRepository
 import com.karrot.example.repository.order.OrderFutureRepository
 import com.karrot.example.repository.shipment.AddressReactiveRepository
 import com.karrot.example.repository.store.StoreMutinyRepository
+import com.karrot.example.usecase.order.CreateOrderUseCaseBase
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.future.await
 import kotlinx.coroutines.jdk9.awaitLast

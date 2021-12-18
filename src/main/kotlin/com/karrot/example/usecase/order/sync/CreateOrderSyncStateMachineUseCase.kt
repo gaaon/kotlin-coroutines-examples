@@ -1,4 +1,4 @@
-package com.karrot.example.usecase
+package com.karrot.example.usecase.order.sync
 
 import com.karrot.example.entity.account.User
 import com.karrot.example.entity.catalog.Product
@@ -9,6 +9,7 @@ import com.karrot.example.repository.catalog.ProductSyncRepository
 import com.karrot.example.repository.order.OrderSyncRepository
 import com.karrot.example.repository.shipment.AddressSyncRepository
 import com.karrot.example.repository.store.StoreSyncRepository
+import com.karrot.example.usecase.order.CreateOrderUseCaseBase
 import com.karrot.example.vo.Address
 
 class CreateOrderSyncStateMachineUseCase(
