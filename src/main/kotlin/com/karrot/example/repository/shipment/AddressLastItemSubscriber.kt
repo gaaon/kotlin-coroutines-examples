@@ -1,9 +1,9 @@
-package com.karrot.example.service.shipment
+package com.karrot.example.repository.shipment
 
 import com.karrot.example.vo.Address
 import java.util.concurrent.Flow
 
-class AddressSubscriber(
+class AddressLastItemSubscriber(
     private val callback: (address: Address) -> Unit
 ) : Flow.Subscriber<Address> {
     lateinit var s: Flow.Subscription
@@ -24,6 +24,7 @@ class AddressSubscriber(
     }
 
     override fun onComplete() {
+        checkNotNull(address)
         callback.invoke(address!!)
     }
 }

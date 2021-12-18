@@ -1,4 +1,4 @@
-package com.karrot.example.service.order
+package com.karrot.example.repository.order
 
 import com.karrot.example.entity.account.User
 import com.karrot.example.entity.catalog.Product
@@ -7,7 +7,7 @@ import com.karrot.example.entity.order.OrderItem
 import com.karrot.example.entity.store.Store
 import com.karrot.example.vo.Address
 
-class OrderSyncService {
+class OrderSyncRepository {
     fun createOrderSync(
         buyer: User,
         products: List<Product>,

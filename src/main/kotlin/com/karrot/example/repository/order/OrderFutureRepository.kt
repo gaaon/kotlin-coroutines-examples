@@ -1,4 +1,4 @@
-package com.karrot.example.service.order
+package com.karrot.example.repository.order
 
 import com.karrot.example.entity.account.User
 import com.karrot.example.entity.catalog.Product
@@ -10,7 +10,7 @@ import java.util.concurrent.CompletableFuture
 import java.util.concurrent.CompletionStage
 import java.util.concurrent.TimeUnit
 
-class OrderFutureService {
+class OrderFutureRepository {
     fun createOrderAsCompletableFuture(
         buyer: User,
         products: List<Product>,

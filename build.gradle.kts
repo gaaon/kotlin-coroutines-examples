@@ -1,5 +1,5 @@
 plugins {
-    kotlin("jvm") version "1.6.0"
+    kotlin("jvm") version "1.6.10"
 }
 
 group = "com.karrot.commerce"
@@ -20,7 +20,7 @@ dependencies {
     implementation("io.smallrye.reactive:mutiny-kotlin:1.2.0")
 
     // reactor
-    implementation("io.projectreactor:reactor-core:3.4.12")
+    implementation("io.projectreactor:reactor-core:3.4.13")
     implementation("io.projectreactor.addons:reactor-adapter:3.4.5")
 
     // rxjava
@@ -31,5 +31,22 @@ dependencies {
     implementation("io.smallrye.reactive:mutiny-reactor:1.2.0")
 
     // faker
-    implementation("com.github.javafaker:javafaker:0.15")
+    implementation("com.github.javafaker:javafaker:1.0.2")
+
+    /// test
+    // junit
+    testImplementation("org.junit.jupiter:junit-jupiter:5.8.2")
+
+    // mockk
+    testImplementation("io.mockk:mockk:1.12.1")
+
+    // common-lang
+    implementation("org.apache.commons:commons-lang3:3.12.0")
+}
+
+tasks.withType<Test> {
+    useJUnitPlatform()
+    testLogging {
+        events("passed", "skipped", "failed")
+    }
 }

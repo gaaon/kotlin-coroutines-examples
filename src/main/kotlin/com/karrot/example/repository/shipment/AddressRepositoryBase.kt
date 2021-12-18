@@ -1,8 +1,8 @@
-package com.karrot.example.service.shipment
+package com.karrot.example.repository.shipment
 
 import com.karrot.example.vo.Address
 
-open class AddressServiceBase {
+open class AddressRepositoryBase {
     internal fun prepareAddresses(): List<Address> {
         return listOf(
             Address(
@@ -13,6 +13,10 @@ open class AddressServiceBase {
                 roadNameAddress = "서울특별시 서초구 강남대로 465",
                 detailAddress = "10층 B",
             ),
+            Address(
+                roadNameAddress = "서울특별시 구로구 디지털로30길 28",
+                detailAddress = "609호",
+            )
         )
     }
 }

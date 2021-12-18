@@ -4,21 +4,21 @@ import com.karrot.example.entity.account.User
 import com.karrot.example.entity.catalog.Product
 import com.karrot.example.entity.order.Order
 import com.karrot.example.entity.store.Store
-import com.karrot.example.service.account.UserRxService
-import com.karrot.example.service.catalog.ProductReactorService
-import com.karrot.example.service.order.OrderFutureService
-import com.karrot.example.service.shipment.AddressReactiveService
-import com.karrot.example.service.shipment.AddressSubscriber
-import com.karrot.example.service.store.StoreMutinyService
+import com.karrot.example.repository.account.UserRxRepository
+import com.karrot.example.repository.catalog.ProductReactorRepository
+import com.karrot.example.repository.order.OrderFutureRepository
+import com.karrot.example.repository.shipment.AddressLastItemSubscriber
+import com.karrot.example.repository.shipment.AddressReactiveRepository
+import com.karrot.example.repository.store.StoreMutinyRepository
 import com.karrot.example.vo.Address
 
 
 fun main() {
-    val userService = UserRxService()
-    val productService = ProductReactorService()
-    val orderService = OrderFutureService()
-    val addressService = AddressReactiveService()
-    val storeService = StoreMutinyService()
+    val userService = UserRxRepository()
+    val productService = ProductReactorRepository()
+    val orderService = OrderFutureRepository()
+    val addressService = AddressReactiveRepository()
+    val storeService = StoreMutinyRepository()
 
     val productIds = listOf("product1", "product2", "product3")
     val userId = "user1"
@@ -33,7 +33,7 @@ fun main() {
     fun resume(value: Any) {
         when (label) {
             0 -> {
-                userService.getUserByIdAsMaybe(userId)
+                userService.findUserByIdAsMaybe(userId)
                     .subscribe { user ->
                         label++
                         resume(user)
@@ -41,15 +41,15 @@ fun main() {
             }
             1 -> {
                 buyer = value as User
-                addressService.getAddressByUserAsPublisher(buyer)
-                    .subscribe(AddressSubscriber { address ->
+                addressService.findAddressByUserAsPublisher(buyer)
+                    .subscribe(AddressLastItemSubscriber { address ->
                         label++
                         resume(address)
                     })
             }
             2 -> {
                 address = value as Address
-                productService.getProductsByIdsAsFlux(productIds).collectList()
+                productService.findAllProductsByIdsAsFlux(productIds).collectList()
                     .subscribe { products ->
                         label++
                         resume(products)
