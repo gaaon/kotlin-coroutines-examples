@@ -12,11 +12,11 @@ import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 
 class CreateOrderReactorUseCase(
-    private val userService: UserRxRepository,
-    private val productService: ProductReactorRepository,
-    private val orderService: OrderFutureRepository,
-    private val addressService: AddressReactiveRepository,
-    private val storeService: StoreMutinyRepository,
+    private val userRepository: UserRxRepository,
+    private val addressRepository: AddressReactiveRepository,
+    private val productRepository: ProductReactorRepository,
+    private val storeRepository: StoreMutinyRepository,
+    private val orderRepository: OrderFutureRepository,
 ) : CreateOrderUseCaseBase() {
     data class InputValues(
         val userId: String,
@@ -26,22 +26,22 @@ class CreateOrderReactorUseCase(
     fun execute(inputValues: InputValues): Mono<Order> {
         val (userId, productIds) = inputValues
 
-        val createdOrder = RxJava3Adapter.maybeToMono(userService.findUserByIdAsMaybe(userId))
+        val createdOrder = RxJava3Adapter.maybeToMono(userRepository.findUserByIdAsMaybe(userId))
             .flatMap { buyer ->
-                JdkFlowAdapter.flowPublisherToFlux(addressService.findAddressByUserAsPublisher(buyer))
+                JdkFlowAdapter.flowPublisherToFlux(addressRepository.findAddressByUserAsPublisher(buyer))
                     .last()
                     .flatMap { address ->
                         isValidRegion(address)
-                        productService.findAllProductsByIdsAsFlux(productIds)
+                        productRepository.findAllProductsByIdsAsFlux(productIds)
                             .collectList()
                             .flatMap { products ->
                                 check(products.isNotEmpty())
-                                Flux.from(storeService.getStoresByProductsAsMulti(products))
+                                Flux.from(storeRepository.getStoresByProductsAsMulti(products))
                                     .collectList()
                                     .flatMap { stores ->
                                         check(stores.isNotEmpty())
                                         Mono.fromFuture(
-                                            orderService.createOrderAsCompletableFuture(
+                                            orderRepository.createOrderAsCompletableFuture(
                                                 buyer, products, stores, address
                                             ).toCompletableFuture()
                                         )

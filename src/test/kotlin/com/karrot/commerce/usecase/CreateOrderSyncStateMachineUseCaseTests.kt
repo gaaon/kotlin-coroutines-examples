@@ -5,8 +5,7 @@ import com.karrot.example.repository.catalog.ProductSyncRepository
 import com.karrot.example.repository.order.OrderSyncRepository
 import com.karrot.example.repository.shipment.AddressSyncRepository
 import com.karrot.example.repository.store.StoreSyncRepository
-import com.karrot.example.usecase.CreateOrderSyncStateUseCase
-import com.karrot.example.usecase.CreateOrderSyncUseCase
+import com.karrot.example.usecase.CreateOrderSyncStateMachineUseCase
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.SpyK
 import io.mockk.junit5.MockKExtension
@@ -15,9 +14,9 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 
 @ExtendWith(MockKExtension::class)
-class CreateOrderSyncStateUseCaseTests {
+class CreateOrderSyncStateMachineUseCaseTests {
     @InjectMockKs
-    private lateinit var createOrderUseCase: CreateOrderSyncStateUseCase
+    private lateinit var createOrderUseCase: CreateOrderSyncStateMachineUseCase
 
     @SpyK
     private var spyUserRepository: UserSyncRepository = UserSyncRepository()
@@ -43,7 +42,7 @@ class CreateOrderSyncStateUseCaseTests {
         // when
         val watch = StopWatch().also { it.start() }
 
-        val inputValues = CreateOrderSyncStateUseCase.InputValues(userId, productIds)
+        val inputValues = CreateOrderSyncStateMachineUseCase.InputValues(userId, productIds)
         val createdOrder = createOrderUseCase.execute(inputValues)
 
         watch.stop()

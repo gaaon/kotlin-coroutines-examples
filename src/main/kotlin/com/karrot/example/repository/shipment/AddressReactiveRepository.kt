@@ -1,5 +1,6 @@
 package com.karrot.example.repository.shipment
 
+import com.karrot.example.const.TIME_DELAY_MS
 import com.karrot.example.entity.account.User
 import com.karrot.example.vo.Address
 import java.util.concurrent.Flow
@@ -11,6 +12,7 @@ class AddressReactiveRepository : AddressRepositoryBase() {
         return Flow.Publisher<Address> { subscriber ->
             subscriber.onSubscribe(object : Flow.Subscription {
                 override fun request(n: Long) {
+                    Thread.sleep(TIME_DELAY_MS)
                     var cnt = n
                     while (cnt-- > 0) {
                         if (addressIterator.hasNext()) {

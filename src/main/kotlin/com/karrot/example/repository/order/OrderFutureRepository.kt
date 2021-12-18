@@ -1,5 +1,6 @@
 package com.karrot.example.repository.order
 
+import com.karrot.example.const.TIME_DELAY_MS
 import com.karrot.example.entity.account.User
 import com.karrot.example.entity.catalog.Product
 import com.karrot.example.entity.order.Order
@@ -27,7 +28,7 @@ class OrderFutureRepository {
             address = address,
         )
 
-        val delayed = CompletableFuture.delayedExecutor(100, TimeUnit.MILLISECONDS)
+        val delayed = CompletableFuture.delayedExecutor(TIME_DELAY_MS, TimeUnit.MILLISECONDS)
         return CompletableFuture.supplyAsync({ createdOrder }, delayed)
     }
 }

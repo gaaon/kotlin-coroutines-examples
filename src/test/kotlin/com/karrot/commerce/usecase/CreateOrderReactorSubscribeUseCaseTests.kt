@@ -5,7 +5,7 @@ import com.karrot.example.repository.catalog.ProductReactorRepository
 import com.karrot.example.repository.order.OrderFutureRepository
 import com.karrot.example.repository.shipment.AddressReactiveRepository
 import com.karrot.example.repository.store.StoreMutinyRepository
-import com.karrot.example.usecase.CreateOrderReactorUseCase
+import com.karrot.example.usecase.CreateOrderReactorSubscribeUseCase
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.SpyK
 import io.mockk.junit5.MockKExtension
@@ -14,9 +14,9 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 
 @ExtendWith(MockKExtension::class)
-class CreateOrderReactorUseCaseTests {
+class CreateOrderReactorSubscribeUseCaseTests {
     @InjectMockKs
-    private lateinit var createOrderUseCase: CreateOrderReactorUseCase
+    private lateinit var createOrderUseCase: CreateOrderReactorSubscribeUseCase
 
     @SpyK
     private var spyUserRepository: UserRxRepository = UserRxRepository()
@@ -42,7 +42,7 @@ class CreateOrderReactorUseCaseTests {
         // when
         val watch = StopWatch().also { it.start() }
 
-        val inputValues = CreateOrderReactorUseCase.InputValues(userId, productIds)
+        val inputValues = CreateOrderReactorSubscribeUseCase.InputValues(userId, productIds)
         val createdOrder = createOrderUseCase.execute(inputValues).block()
 
         watch.stop()

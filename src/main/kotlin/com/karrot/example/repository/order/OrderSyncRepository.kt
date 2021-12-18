@@ -1,5 +1,6 @@
 package com.karrot.example.repository.order
 
+import com.karrot.example.const.TIME_DELAY_MS
 import com.karrot.example.entity.account.User
 import com.karrot.example.entity.catalog.Product
 import com.karrot.example.entity.order.Order
@@ -24,7 +25,7 @@ class OrderSyncRepository {
             address = address,
         )
 
-        Thread.sleep(100)
+        Thread.sleep(TIME_DELAY_MS)
         return createdOrder
     }
 }

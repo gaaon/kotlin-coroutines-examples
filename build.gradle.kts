@@ -42,6 +42,10 @@ dependencies {
 
     // common-lang
     implementation("org.apache.commons:commons-lang3:3.12.0")
+
+    // coroutine
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.5.2")
+
 }
 
 tasks.withType<Test> {

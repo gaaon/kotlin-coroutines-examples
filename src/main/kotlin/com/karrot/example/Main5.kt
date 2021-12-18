@@ -7,8 +7,8 @@ import com.karrot.example.entity.store.Store
 import com.karrot.example.repository.account.UserRxRepository
 import com.karrot.example.repository.catalog.ProductReactorRepository
 import com.karrot.example.repository.order.OrderFutureRepository
-import com.karrot.example.repository.shipment.AddressLastItemSubscriber
 import com.karrot.example.repository.shipment.AddressReactiveRepository
+import com.karrot.example.repository.shipment.LastItemSubscriber
 import com.karrot.example.repository.store.StoreMutinyRepository
 import com.karrot.example.vo.Address
 
@@ -42,7 +42,7 @@ fun main() {
             1 -> {
                 buyer = value as User
                 addressService.findAddressByUserAsPublisher(buyer)
-                    .subscribe(AddressLastItemSubscriber { address ->
+                    .subscribe(LastItemSubscriber { address ->
                         label++
                         resume(address)
                     })
