@@ -25,7 +25,7 @@ class CreateOrderReactorSubscribeUseCase(
     fun execute(inputValues: InputValues): Mono<Order> {
         val (userId, productIds) = inputValues
 
-        return Mono.create {
+        return Mono.create { emitter ->
             userRepository.findUserByIdAsMaybe(userId)
                 .subscribe { buyer ->
                     addressRepository.findAddressByUserAsPublisher(buyer)
@@ -43,7 +43,7 @@ class CreateOrderReactorSubscribeUseCase(
                                             orderRepository.createOrderAsCompletableFuture(
                                                 buyer, products, stores, address
                                             ).whenComplete { order, _ ->
-                                                it.success(order)
+                                                emitter.success(order)
                                             }
                                         }
                                 }

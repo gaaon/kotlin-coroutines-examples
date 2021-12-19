@@ -27,7 +27,7 @@ class CreateOrderReactorUseCase(
     fun execute(inputValues: InputValues): Mono<Order> {
         val (userId, productIds) = inputValues
 
-        val createdOrder = RxJava3Adapter.maybeToMono(userRepository.findUserByIdAsMaybe(userId))
+        return RxJava3Adapter.maybeToMono(userRepository.findUserByIdAsMaybe(userId))
             .flatMap { buyer ->
                 JdkFlowAdapter.flowPublisherToFlux(addressRepository.findAddressByUserAsPublisher(buyer))
                     .last()
@@ -50,7 +50,5 @@ class CreateOrderReactorUseCase(
                             }
                     }
             }
-
-        return createdOrder
     }
 }
