@@ -32,7 +32,7 @@ class CreateOrderReactorUseCase(
                 JdkFlowAdapter.flowPublisherToFlux(addressRepository.findAddressByUserAsPublisher(buyer))
                     .last()
                     .flatMap { address ->
-                        isValidRegion(address)
+                        checkValidRegion(address)
                         productRepository.findAllProductsByIdsAsFlux(productIds)
                             .collectList()
                             .flatMap { products ->

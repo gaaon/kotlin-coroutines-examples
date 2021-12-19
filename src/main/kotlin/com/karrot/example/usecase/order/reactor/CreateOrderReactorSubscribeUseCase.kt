@@ -30,7 +30,7 @@ class CreateOrderReactorSubscribeUseCase(
                 .subscribe { buyer ->
                     addressRepository.findAddressByUserAsPublisher(buyer)
                         .subscribe(LastItemSubscriber { address ->
-                            isValidRegion(address)
+                            checkValidRegion(address)
                             productRepository.findAllProductsByIdsAsFlux(productIds)
                                 .collectList()
                                 .subscribe { products ->

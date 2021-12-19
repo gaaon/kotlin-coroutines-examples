@@ -31,7 +31,7 @@ class CreateOrderCoroutineUseCase(
 
         val buyer = userService.findUserByIdAsMaybe(userId).awaitSingle()
         val address = addressService.findAddressByUserAsPublisher(buyer).awaitLast()
-        isValidRegion(address)
+        checkValidRegion(address)
         val products = productService.findAllProductsByIdsAsFlux(productIds).collectList().awaitSingle()
         check(products.isNotEmpty())
         val stores = storeService.getStoresByProductsAsMulti(products).asFlow().toList()

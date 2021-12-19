@@ -79,7 +79,7 @@ class CreateOrderAsyncStateMachine2UseCase(
             2 -> {
                 cont.label = 3
                 cont.address = (cont.result as Result<Address>).getOrThrow()
-                isValidRegion(cont.address)
+                checkValidRegion(cont.address)
                 productRepository.findAllProductsByIdsAsFlux(productIds)
                     .collectList()
                     .subscribe { products ->

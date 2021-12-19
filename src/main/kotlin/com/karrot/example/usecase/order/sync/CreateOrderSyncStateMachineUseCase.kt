@@ -68,7 +68,7 @@ class CreateOrderSyncStateMachineUseCase(
             2 -> {
                 cont.label = 3
                 cont.address = cont.result as Address
-                isValidRegion(cont.address)
+                checkValidRegion(cont.address)
                 productRepository.findAllProductsByIdsSync(productIds)
                     .let { products ->
                         cont.resumeWith(products)

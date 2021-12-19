@@ -28,7 +28,7 @@ class CreateOrderSyncUseCase(
 
         // 2. 주소 조회 및 유효성 체크
         val address = addressRepository.findAddressByUserSync(buyer).last()
-        isValidRegion(address)
+        checkValidRegion(address)
 
         // 3. 상품들 조회
         val products = productRepository.findAllProductsByIdsSync(productIds)
