@@ -4,23 +4,23 @@ import com.karrot.example.entity.account.User
 import com.karrot.example.entity.catalog.Product
 import com.karrot.example.entity.order.Order
 import com.karrot.example.entity.store.Store
-import com.karrot.example.repository.account.UserRxRepository
-import com.karrot.example.repository.catalog.ProductReactorRepository
-import com.karrot.example.repository.order.OrderFutureRepository
-import com.karrot.example.repository.shipment.AddressReactiveRepository
+import com.karrot.example.repository.account.UserAsyncRepository
+import com.karrot.example.repository.catalog.ProductAsyncRepository
+import com.karrot.example.repository.order.OrderAsyncRepository
+import com.karrot.example.repository.shipment.AddressAsyncRepository
 import com.karrot.example.repository.shipment.LastItemSubscriber
-import com.karrot.example.repository.store.StoreMutinyRepository
+import com.karrot.example.repository.store.StoreAsyncRepository
 import com.karrot.example.usecase.order.CreateOrderUseCaseBase
 import com.karrot.example.vo.Address
 import kotlin.coroutines.Continuation
 import kotlin.coroutines.CoroutineContext
 
 class CreateOrderAsyncStateMachine2UseCase(
-    private val userRepository: UserRxRepository,
-    private val addressRepository: AddressReactiveRepository,
-    private val productRepository: ProductReactorRepository,
-    private val storeRepository: StoreMutinyRepository,
-    private val orderRepository: OrderFutureRepository,
+    private val userRepository: UserAsyncRepository,
+    private val addressRepository: AddressAsyncRepository,
+    private val productRepository: ProductAsyncRepository,
+    private val storeRepository: StoreAsyncRepository,
+    private val orderRepository: OrderAsyncRepository,
 ) : CreateOrderUseCaseBase() {
     data class InputValues(
         val userId: String,

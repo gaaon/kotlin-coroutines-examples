@@ -5,8 +5,8 @@ import com.karrot.example.entity.account.User
 import com.karrot.example.vo.Address
 import java.util.concurrent.Flow
 
-class AddressReactiveRepository : AddressRepositoryBase() {
-    fun findAddressByUserAsPublisher(user: User): Flow.Publisher<Address> {
+class AddressReactiveRepository : AddressRepositoryBase(), AddressAsyncRepository {
+    override fun findAddressByUserAsPublisher(user: User): Flow.Publisher<Address> {
         val addressIterator = prepareAddresses().iterator()
 
         return Flow.Publisher<Address> { subscriber ->
