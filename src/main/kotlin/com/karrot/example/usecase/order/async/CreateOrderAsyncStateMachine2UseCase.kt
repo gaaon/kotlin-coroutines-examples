@@ -37,10 +37,13 @@ class CreateOrderAsyncStateMachine2UseCase(
         lateinit var products: List<Product>
         lateinit var stores: List<Store>
         lateinit var order: Order
-        lateinit var resume: (result: Result<Any>) -> Unit
+        lateinit var resume: () -> Unit
 
         override val context: CoroutineContext = completion.context
-        override fun resumeWith(result: Result<Any>) = resume(result)
+        override fun resumeWith(result: Result<Any>) {
+            this.result = result
+            this.resume()
+        }
 
         fun complete(result: Result<Any>) {
             this.completion.resumeWith(result)
@@ -52,10 +55,8 @@ class CreateOrderAsyncStateMachine2UseCase(
 
         val that = this
         val cont = completion as? SharedDataContinuation
-            ?: SharedDataContinuation(completion)
-            .apply {
-                resume = fun(result: Result<Any>) {
-                    this.result = result
+            ?: SharedDataContinuation(completion).apply {
+                resume = fun() {
                     that.execute(inputValues, this)
                 }
             }

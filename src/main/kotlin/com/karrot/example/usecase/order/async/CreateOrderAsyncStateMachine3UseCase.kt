@@ -29,7 +29,7 @@ class CreateOrderAsyncStateMachine3UseCase(
         val productIds: List<String>,
     )
 
-    class UseCaseContinuation(
+    class SharedDataContinuation(
         private val continuation: Continuation<Any>,
     ) : Continuation<Any> {
         var label: Int = 0
@@ -56,11 +56,13 @@ class CreateOrderAsyncStateMachine3UseCase(
     fun execute(inputValues: InputValues, continuation: Continuation<Any>) {
         val (userId, productIds) = inputValues
 
-        val cont = continuation as? UseCaseContinuation ?: UseCaseContinuation(continuation).apply {
-            resume = fun() {
-                this@CreateOrderAsyncStateMachine3UseCase.execute(inputValues, this)
+        val that = this
+        val cont = continuation as? SharedDataContinuation
+            ?: SharedDataContinuation(continuation).apply {
+                resume = fun() {
+                    that.execute(inputValues, this)
+                }
             }
-        }
 
         when (cont.label) {
             0 -> {
