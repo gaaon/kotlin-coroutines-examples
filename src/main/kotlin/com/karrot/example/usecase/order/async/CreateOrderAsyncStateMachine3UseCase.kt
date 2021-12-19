@@ -88,7 +88,7 @@ class CreateOrderAsyncStateMachine3UseCase(
                 cont.label = 5
                 cont.stores = (cont.result as Result<List<Store>>).getOrThrow()
                 check(cont.stores.isNotEmpty())
-                orderRepository.createOrderAsCompletableFuture(
+                orderRepository.createOrderAsFuture(
                     cont.buyer, cont.products, cont.stores, cont.address
                 ).awaitSingle(cont)
             }

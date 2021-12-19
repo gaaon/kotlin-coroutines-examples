@@ -25,7 +25,7 @@ class CreateOrderAsyncStateMachine1UseCase(
         val productIds: List<String>,
     )
 
-    class Continuation {
+    class SharedData {
         var label: Int = 0
         lateinit var result: Any
         lateinit var buyer: User
@@ -33,72 +33,73 @@ class CreateOrderAsyncStateMachine1UseCase(
         lateinit var products: List<Product>
         lateinit var stores: List<Store>
         lateinit var order: Order
-        lateinit var resume: () -> Unit
-
-        fun resumeWith(result: Any) {
-            this.result = result
-            this.resume()
-        }
+        lateinit var resumeWith: (result: Any) -> Unit
     }
 
-    fun execute(inputValues: InputValues, cb: (order: Order) -> Unit, continuation: Continuation? = null) {
+    fun execute(
+        inputValues: InputValues,
+        cb: (order: Order) -> Unit,
+        sharedData: SharedData? = null,
+    ) {
         val (userId, productIds) = inputValues
 
-        val cont = continuation ?: Continuation().apply {
-            resume = fun() {
-                this@CreateOrderAsyncStateMachine1UseCase.execute(inputValues, cb, this)
+        val that = this
+        val shared = sharedData ?: SharedData().apply {
+            resumeWith = fun(result: Any) {
+                this.result = result
+                that.execute(inputValues, cb, this)
             }
         }
 
-        when (cont.label) {
+        when (shared.label) {
             0 -> {
-                cont.label = 1
+                shared.label = 1
                 userRepository.findUserByIdAsMaybe(userId)
                     .subscribe { user ->
-                        cont.resumeWith(user)
+                        shared.resumeWith(user)
                     }
             }
             1 -> {
-                cont.label = 2
-                cont.buyer = cont.result as User
-                addressRepository.findAddressByUserAsPublisher(cont.buyer)
+                shared.label = 2
+                shared.buyer = shared.result as User
+                addressRepository.findAddressByUserAsPublisher(shared.buyer)
                     .subscribe(LastItemSubscriber { address ->
-                        cont.resumeWith(address)
+                        shared.resumeWith(address)
                     })
             }
             2 -> {
-                cont.label = 3
-                cont.address = cont.result as Address
-                checkValidRegion(cont.address)
+                shared.label = 3
+                shared.address = shared.result as Address
+                checkValidRegion(shared.address)
                 productRepository.findAllProductsByIdsAsFlux(productIds)
                     .collectList()
                     .subscribe { products ->
-                        cont.resumeWith(products)
+                        shared.resumeWith(products)
                     }
             }
             3 -> {
-                cont.label = 4
-                cont.products = cont.result as List<Product>
-                check(cont.products.isNotEmpty())
-                storeRepository.getStoresByProductsAsMulti(cont.products)
+                shared.label = 4
+                shared.products = shared.result as List<Product>
+                check(shared.products.isNotEmpty())
+                storeRepository.getStoresByProductsAsMulti(shared.products)
                     .collect().asList()
                     .subscribe().with { stores ->
-                        cont.resumeWith(stores)
+                        shared.resumeWith(stores)
                     }
             }
             4 -> {
-                cont.label = 5
-                cont.stores = cont.result as List<Store>
-                check(cont.stores.isNotEmpty())
-                orderRepository.createOrderAsCompletableFuture(
-                    cont.buyer, cont.products, cont.stores, cont.address
+                shared.label = 5
+                shared.stores = shared.result as List<Store>
+                check(shared.stores.isNotEmpty())
+                orderRepository.createOrderAsFuture(
+                    shared.buyer, shared.products, shared.stores, shared.address
                 ).whenComplete { order, _ ->
-                    cont.resumeWith(order)
+                    shared.resumeWith(order)
                 }
             }
             5 -> {
-                cont.order = cont.result as Order
-                cb(cont.order)
+                shared.order = shared.result as Order
+                cb(shared.order)
             }
             else -> throw IllegalAccessException()
         }

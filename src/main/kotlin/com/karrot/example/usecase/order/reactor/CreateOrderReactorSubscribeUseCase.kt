@@ -37,10 +37,9 @@ class CreateOrderReactorSubscribeUseCase(
                                     check(products.isNotEmpty())
                                     storeRepository.getStoresByProductsAsMulti(products)
                                         .collect().asList()
-                                        .subscribe()
-                                        .with { stores ->
+                                        .subscribe().with { stores ->
                                             check(stores.isNotEmpty())
-                                            orderRepository.createOrderAsCompletableFuture(
+                                            orderRepository.createOrderAsFuture(
                                                 buyer, products, stores, address
                                             ).whenComplete { order, _ ->
                                                 emitter.success(order)

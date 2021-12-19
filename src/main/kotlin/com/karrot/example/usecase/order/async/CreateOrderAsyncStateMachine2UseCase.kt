@@ -27,8 +27,8 @@ class CreateOrderAsyncStateMachine2UseCase(
         val productIds: List<String>,
     )
 
-    class UseCaseContinuation(
-        private val continuation: Continuation<Any>,
+    class SharedDataContinuation(
+        private val completion: Continuation<Any>,
     ) : Continuation<Any> {
         var label: Int = 0
         lateinit var result: Any
@@ -37,28 +37,28 @@ class CreateOrderAsyncStateMachine2UseCase(
         lateinit var products: List<Product>
         lateinit var stores: List<Store>
         lateinit var order: Order
-        lateinit var resume: () -> Unit
+        lateinit var resume: (result: Result<Any>) -> Unit
 
-        override val context: CoroutineContext = continuation.context
-
-        override fun resumeWith(result: Result<Any>) {
-            this.result = result
-            this.resume()
-        }
+        override val context: CoroutineContext = completion.context
+        override fun resumeWith(result: Result<Any>) = resume(result)
 
         fun complete(result: Result<Any>) {
-            this.continuation.resumeWith(result)
+            this.completion.resumeWith(result)
         }
     }
 
-    fun execute(inputValues: InputValues, continuation: Continuation<Any>) {
+    fun execute(inputValues: InputValues, completion: Continuation<Any>) {
         val (userId, productIds) = inputValues
 
-        val cont = continuation as? UseCaseContinuation ?: UseCaseContinuation(continuation).apply {
-            resume = fun() {
-                this@CreateOrderAsyncStateMachine2UseCase.execute(inputValues, this)
+        val that = this
+        val cont = completion as? SharedDataContinuation
+            ?: SharedDataContinuation(completion)
+            .apply {
+                resume = fun(result: Result<Any>) {
+                    this.result = result
+                    that.execute(inputValues, this)
+                }
             }
-        }
 
         when (cont.label) {
             0 -> {
@@ -100,7 +100,7 @@ class CreateOrderAsyncStateMachine2UseCase(
                 cont.label = 5
                 cont.stores = (cont.result as Result<List<Store>>).getOrThrow()
                 check(cont.stores.isNotEmpty())
-                orderRepository.createOrderAsCompletableFuture(
+                orderRepository.createOrderAsFuture(
                     cont.buyer, cont.products, cont.stores, cont.address
                 ).whenComplete { order, _ ->
                     cont.resumeWith(Result.success(order))

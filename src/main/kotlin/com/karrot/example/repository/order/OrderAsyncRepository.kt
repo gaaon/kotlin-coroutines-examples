@@ -8,7 +8,7 @@ import com.karrot.example.vo.Address
 import java.util.concurrent.CompletableFuture
 
 interface OrderAsyncRepository {
-    fun createOrderAsCompletableFuture(
+    fun createOrderAsFuture(
         buyer: User,
         products: List<Product>,
         stores: List<Store>,

@@ -42,7 +42,7 @@ class CreateOrderReactorUseCase(
                                     .flatMap { stores ->
                                         check(stores.isNotEmpty())
                                         Mono.fromFuture(
-                                            orderRepository.createOrderAsCompletableFuture(
+                                            orderRepository.createOrderAsFuture(
                                                 buyer, products, stores, address
                                             ).toCompletableFuture()
                                         )

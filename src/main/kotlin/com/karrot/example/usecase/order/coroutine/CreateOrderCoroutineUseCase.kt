@@ -11,7 +11,6 @@ import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.future.await
 import kotlinx.coroutines.jdk9.awaitLast
 import kotlinx.coroutines.reactive.asFlow
-import kotlinx.coroutines.reactive.awaitSingle
 import kotlinx.coroutines.rx3.awaitSingle
 
 class CreateOrderCoroutineUseCase(
@@ -29,14 +28,23 @@ class CreateOrderCoroutineUseCase(
     suspend fun execute(inputValues: InputValues): Order {
         val (userId, productIds) = inputValues
 
+        // 1. 구매자 조회
         val buyer = userRepository.findUserByIdAsMaybe(userId).awaitSingle()
+
+        // 2. 주소 조회 및 유효성 체크
         val address = addressRepository.findAddressByUserAsPublisher(buyer).awaitLast()
         checkValidRegion(address)
-        val products = productRepository.findAllProductsByIdsAsFlux(productIds).collectList().awaitSingle()
+
+        // 3. 상품들 조회
+        val products = productRepository.findAllProductsByIdsAsFlux(productIds).asFlow().toList()
         check(products.isNotEmpty())
+
+        // 4. 스토어 조회
         val stores = storeRepository.getStoresByProductsAsMulti(products).asFlow().toList()
         check(stores.isNotEmpty())
-        val order = orderRepository.createOrderAsCompletableFuture(buyer, products, stores, address).await()
+
+        // 5. 주문 생성
+        val order = orderRepository.createOrderAsFuture(buyer, products, stores, address).await()
 
         return order
     }

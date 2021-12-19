@@ -11,7 +11,7 @@ import java.util.concurrent.CompletableFuture
 import java.util.concurrent.TimeUnit
 
 class OrderFutureRepository : OrderAsyncRepository {
-    override fun createOrderAsCompletableFuture(
+    override fun createOrderAsFuture(
         buyer: User,
         products: List<Product>,
         stores: List<Store>,

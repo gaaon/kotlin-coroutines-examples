@@ -24,7 +24,7 @@ class CreateOrderSyncStateMachineUseCase(
         val productIds: List<String>,
     )
 
-    class Continuation {
+    class SharedData {
         var label: Int = 0
         lateinit var result: Any
         lateinit var buyer: User
@@ -32,70 +32,70 @@ class CreateOrderSyncStateMachineUseCase(
         lateinit var products: List<Product>
         lateinit var stores: List<Store>
         lateinit var order: Order
-        lateinit var resume: () -> Order
-
-        fun resumeWith(result: Any): Order {
-            this.result = result
-            return this.resume()
-        }
+        lateinit var resumeWith: (result: Any) -> Order
     }
 
-    fun execute(inputValues: InputValues, continuation: Continuation? = null): Order {
+    fun execute(
+        inputValues: InputValues,
+        sharedData: SharedData? = null,
+    ): Order {
         val (userId, productIds) = inputValues
 
-        val cont = continuation ?: Continuation().apply {
-            resume = fun (): Order {
-                return this@CreateOrderSyncStateMachineUseCase.execute(inputValues, this)
+        val that = this
+        val shared = sharedData ?: SharedData().apply {
+            this.resumeWith = fun (result: Any): Order {
+                this.result = result
+                return that.execute(inputValues, this)
             }
         }
 
-        return when (cont.label) {
+        return when (shared.label) {
             0 -> {
-                cont.label = 1
+                shared.label = 1
                 userRepository.findUserByIdSync(userId)
                     .let { user ->
-                        cont.resumeWith(user)
+                        shared.resumeWith(user)
                     }
             }
             1 -> {
-                cont.label = 2
-                cont.buyer = cont.result as User
-                addressRepository.findAddressByUserSync(cont.buyer).last()
+                shared.label = 2
+                shared.buyer = shared.result as User
+                addressRepository.findAddressByUserSync(shared.buyer).last()
                     .let { address ->
-                        cont.resumeWith(address)
+                        shared.resumeWith(address)
                     }
             }
             2 -> {
-                cont.label = 3
-                cont.address = cont.result as Address
-                checkValidRegion(cont.address)
+                shared.label = 3
+                shared.address = shared.result as Address
+                checkValidRegion(shared.address)
                 productRepository.findAllProductsByIdsSync(productIds)
                     .let { products ->
-                        cont.resumeWith(products)
+                        shared.resumeWith(products)
                     }
             }
             3 -> {
-                cont.label = 4
-                cont.products = cont.result as List<Product>
-                check(cont.products.isNotEmpty())
-                storeRepository.findStoresByProductsSync(cont.products)
+                shared.label = 4
+                shared.products = shared.result as List<Product>
+                check(shared.products.isNotEmpty())
+                storeRepository.findStoresByProductsSync(shared.products)
                     .let { stores ->
-                        cont.resumeWith(stores)
+                        shared.resumeWith(stores)
                     }
             }
             4 -> {
-                cont.label = 5
-                cont.stores = cont.result as List<Store>
-                check(cont.stores.isNotEmpty())
+                shared.label = 5
+                shared.stores = shared.result as List<Store>
+                check(shared.stores.isNotEmpty())
                 orderRepository.createOrderSync(
-                    cont.buyer, cont.products, cont.stores, cont.address
+                    shared.buyer, shared.products, shared.stores, shared.address
                 ).let { order ->
-                    cont.resumeWith(order)
+                    shared.resumeWith(order)
                 }
             }
             5 -> {
-                cont.order = cont.result as Order
-                cont.order
+                shared.order = shared.result as Order
+                shared.order
             }
             else -> throw IllegalAccessException()
         }
