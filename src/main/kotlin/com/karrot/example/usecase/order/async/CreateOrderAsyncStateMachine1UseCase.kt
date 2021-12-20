@@ -81,7 +81,7 @@ class CreateOrderAsyncStateMachine1UseCase(
                 shared.label = 4
                 shared.products = shared.result as List<Product>
                 check(shared.products.isNotEmpty())
-                storeRepository.getStoresByProductsAsMulti(shared.products)
+                storeRepository.findStoresByProductsAsMulti(shared.products)
                     .collect().asList()
                     .subscribe().with { stores ->
                         shared.resumeWith(stores)

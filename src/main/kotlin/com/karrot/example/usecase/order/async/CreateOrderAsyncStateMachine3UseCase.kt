@@ -84,7 +84,7 @@ class CreateOrderAsyncStateMachine3UseCase(
                 cont.label = 4
                 cont.products = (cont.result as Result<List<Product>>).getOrThrow()
                 check(cont.products.isNotEmpty())
-                storeRepository.getStoresByProductsAsMulti(cont.products).toList(cont)
+                storeRepository.findStoresByProductsAsMulti(cont.products).toList(cont)
             }
             4 -> {
                 cont.label = 5

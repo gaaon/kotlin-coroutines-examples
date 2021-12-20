@@ -41,7 +41,7 @@ class CreateOrderCoroutineUseCase(
         check(products.isNotEmpty())
 
         // 4. 스토어 조회
-        val stores = storeRepository.getStoresByProductsAsMulti(products).asFlow().toList()
+        val stores = storeRepository.findStoresByProductsAsMulti(products).asFlow().toList()
         check(stores.isNotEmpty())
 
         // 5. 주문 생성

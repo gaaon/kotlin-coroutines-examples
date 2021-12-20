@@ -38,7 +38,7 @@ class CreateOrderReactorUseCase(
                             .collectList()
                             .flatMap { products ->
                                 check(products.isNotEmpty())
-                                Flux.from(storeRepository.getStoresByProductsAsMulti(products))
+                                Flux.from(storeRepository.findStoresByProductsAsMulti(products))
                                     .collectList()
                                     .flatMap { stores ->
                                         check(stores.isNotEmpty())

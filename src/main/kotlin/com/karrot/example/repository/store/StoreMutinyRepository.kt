@@ -5,7 +5,7 @@ import com.karrot.example.entity.store.Store
 import io.smallrye.mutiny.Multi
 
 class StoreMutinyRepository : StoreRepositoryBase(), StoreAsyncRepository {
-    override fun getStoresByProductsAsMulti(products: List<Product>): Multi<Store> {
+    override fun findStoresByProductsAsMulti(products: List<Product>): Multi<Store> {
         return Multi.createFrom().iterable(
             products.map { prepareStore(it) }
         )

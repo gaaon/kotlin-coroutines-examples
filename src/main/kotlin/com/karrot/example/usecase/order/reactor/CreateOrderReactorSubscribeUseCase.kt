@@ -35,7 +35,7 @@ class CreateOrderReactorSubscribeUseCase(
                                 .collectList()
                                 .subscribe { products ->
                                     check(products.isNotEmpty())
-                                    storeRepository.getStoresByProductsAsMulti(products)
+                                    storeRepository.findStoresByProductsAsMulti(products)
                                         .collect().asList()
                                         .subscribe().with { stores ->
                                             check(stores.isNotEmpty())

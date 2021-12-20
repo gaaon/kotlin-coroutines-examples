@@ -5,5 +5,5 @@ import com.karrot.example.entity.store.Store
 import io.smallrye.mutiny.Multi
 
 interface StoreAsyncRepository {
-    fun getStoresByProductsAsMulti(products: List<Product>): Multi<Store>
+    fun findStoresByProductsAsMulti(products: List<Product>): Multi<Store>
 }

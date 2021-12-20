@@ -88,7 +88,7 @@ class CreateOrderAsyncStateMachine2UseCase(
                 cont.label = 4
                 cont.products = (cont.result as Result<List<Product>>).getOrThrow()
                 check(cont.products.isNotEmpty())
-                storeRepository.getStoresByProductsAsMulti(cont.products)
+                storeRepository.findStoresByProductsAsMulti(cont.products)
                     .collect().asList()
                     .subscribe().with { stores ->
                         cont.resumeWith(Result.success(stores))
