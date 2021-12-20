@@ -32,7 +32,8 @@ class CreateOrderCoroutineUseCase(
         val buyer = userRepository.findUserByIdAsMaybe(userId).awaitSingle()
 
         // 2. 주소 조회 및 유효성 체크
-        val address = addressRepository.findAddressByUserAsPublisher(buyer).awaitLast()
+        val address = addressRepository.findAddressByUserAsPublisher(buyer)
+            .awaitLast()
         checkValidRegion(address)
 
         // 3. 상품들 조회

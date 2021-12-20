@@ -29,7 +29,8 @@ class CreateOrderReactorUseCase(
 
         return RxJava3Adapter.maybeToMono(userRepository.findUserByIdAsMaybe(userId))
             .flatMap { buyer ->
-                JdkFlowAdapter.flowPublisherToFlux(addressRepository.findAddressByUserAsPublisher(buyer))
+                JdkFlowAdapter.flowPublisherToFlux(
+                    addressRepository.findAddressByUserAsPublisher(buyer))
                     .last()
                     .flatMap { address ->
                         checkValidRegion(address)
@@ -44,7 +45,7 @@ class CreateOrderReactorUseCase(
                                         Mono.fromFuture(
                                             orderRepository.createOrderAsFuture(
                                                 buyer, products, stores, address
-                                            ).toCompletableFuture()
+                                            )
                                         )
                                     }
                             }

@@ -28,7 +28,7 @@ class CreateOrderAsyncStateMachine2UseCase(
     )
 
     class SharedDataContinuation(
-        private val completion: Continuation<Any>,
+        val completion: Continuation<Any>,
     ) : Continuation<Any> {
         var label: Int = 0
         lateinit var result: Any
@@ -44,10 +44,6 @@ class CreateOrderAsyncStateMachine2UseCase(
             this.result = result
             this.resume()
         }
-
-        fun complete(result: Result<Any>) {
-            this.completion.resumeWith(result)
-        }
     }
 
     fun execute(inputValues: InputValues, completion: Continuation<Any>) {
@@ -57,6 +53,7 @@ class CreateOrderAsyncStateMachine2UseCase(
         val cont = completion as? SharedDataContinuation
             ?: SharedDataContinuation(completion).apply {
                 resume = fun() {
+                    // recursive self
                     that.execute(inputValues, this)
                 }
             }
@@ -109,7 +106,7 @@ class CreateOrderAsyncStateMachine2UseCase(
             }
             5 -> {
                 cont.order = (cont.result as Result<Order>).getOrThrow()
-                cont.complete(Result.success(cont.order))
+                cont.completion.resumeWith(Result.success(cont.order))
             }
             else -> throw IllegalAccessException()
         }
